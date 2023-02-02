@@ -5,9 +5,9 @@
 #define BAUD 9600
 #define MYUBRR (F_CPU/16/BAUD)-1
 
-int main(int argc, char** argv){
+static void initUART(void){	
 	/*
-	 * initialize usar
+	 * initialize usart
 	 */
 	//set baud rate
 	UBRR0H = (unsigned char) (MYUBRR>>8);
@@ -25,13 +25,26 @@ int main(int argc, char** argv){
 	 */
 	DDRD |= (1 << DDD3);
 
-	//print h
+}
 
-	while(1){
+static void printString(char* str, int size){
+	for(int i=0; i<size; i++){
 		//keep waiting till the UDREn bit of UCSRnA reg is on
 		while(!(UCSR0A & (1 << UDRE0))); 
 		
-		UDR0 = 'h';	//transmit h char
+		UDR0 = str[i];
+	}
+}
+
+int main(int argc, char** argv){
+	initUART();
+
+	//print h
+	while(1){
+		
+		char s[2] = "hi";
+
+		printString(s, 2);
 
 		//turn on portB5
 		PORTD |= (1 << PORTD3);	//turn on 3rd bit of portd register to turn led on
