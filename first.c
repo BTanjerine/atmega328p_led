@@ -36,18 +36,27 @@ static void printString(char* str, int size){
 	}
 }
 
+static void printValue(int value){
+	
+	//keep waiting till the UDREn bit of UCSRnA reg is on
+	while(!(UCSR0A & (1 << UDRE0))); 
+
+	UDR0 = '0'+value;	//convert to ascii value
+}
+
 int main(int argc, char** argv){
+	int button = 0;
+	
+	//initialize the usart communication
 	initUART();
-
-	//print h
-	while(1){
-		
-		char s[2] = "hi";
-
-		printString(s, 2);
+	
+	//MAIN LOOP
+	while(1){ 
+		//print the value of the button input (port 0)
+		printValue((~PIND&1));	
 
 		//turn on portB5
-		PORTD |= (1 << PORTD3);	//turn on 3rd bit of portd register to turn led on
+		PORTD |= (1 << PORTD3);	//turn on 3rd bit of portd register to turn led on using or (0 or 1 = 1)
 
 		//wait
 		_delay_ms(1000); //1 sec wait
